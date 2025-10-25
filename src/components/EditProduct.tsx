@@ -1,37 +1,28 @@
 import { Button, Field, HStack, Input, VStack } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useLoader } from './Loader';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toaster } from './ui/toaster';
 import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 export const EditProduct = () => {
   type FormData = z.infer<typeof formSchema>;
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
 
-  const { startLoading, stopLoading } = useLoader();
-
-  useEffect(() => {
-    const fetchProductDetails = async () => {
-      try {
-        startLoading();
-        const response = await fetch(`/api/product/${id}`);
-        const data = await response.json();
-        form.setValue('name', data.name);
-        form.setValue('brand', data.brand);
-      } catch (error) {
-        console.error('Error fetching product details:', error);
-      } finally {
-        stopLoading();
-      }
-    };
-
-    fetchProductDetails();
-  }, []);
+  const { isLoading } = useQuery({
+    queryKey: ['getProductEditProduct'],
+    queryFn: () =>
+      fetch(`/api/product/${id}`)
+        .then((res) => res.json())
+        .then((res) => {
+          form.setValue('name', res.name);
+          form.setValue('brand', res.brand);
+          return res;
+        }),
+  });
 
   const formSchema = z.object({
     name: z.string().min(1, t('validations.required')),
@@ -50,28 +41,29 @@ export const EditProduct = () => {
     formState: { errors },
   } = form;
 
-  const onSubmit = async (data: { name: string; brand: string }) => {
-    startLoading();
-    try {
-      await fetch(`/api/product/${id}`, {
+  const useUpdateProduct = useMutation({
+    mutationFn: (data) =>
+      fetch(`/api/product/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      });
-
+      }),
+    onSuccess: () => {
       toaster.create({
         // description: t('product.form.submit.success'),
         description: 'Produkt zaktualizowany pomyślnie',
         type: 'success',
       });
-    } catch (error) {
-      console.error('Błąd:', error);
-    } finally {
-      stopLoading();
-    }
+    },
+  });
+
+  const onSubmit = (data) => {
+    useUpdateProduct.mutate(data);
   };
+
+  if (isLoading) return <div>Loader</div>;
 
   return (
     <>

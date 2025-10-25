@@ -29,24 +29,24 @@ function App() {
         <LoaderProvider>
           <Container>
             <HStack mb={20}>
-              <Button variant="subtle">
-                <Link to={RoutesEnum.Home}>{t('menu.home')}</Link>
-              </Button>
-              <Button variant="subtle">
-                <Link to={RoutesEnum.About}>{t('menu.about')}</Link>
-              </Button>
-              <Button variant="subtle">
-                <Link to={RoutesEnum.User + '/123'}>{t('menu.user')}</Link>
-              </Button>
-              <Button variant="subtle">
-                <Link to={RoutesEnum.Form}>{t('menu.form')}</Link>
-              </Button>
-              <Button variant="subtle">
-                <Link to={RoutesEnum.Counter}>{t('menu.counter')}</Link>
-              </Button>
-              <Button variant="subtle">
-                <Link to={RoutesEnum.Product}>{t('menu.product')}</Link>
-              </Button>
+              <Link to={RoutesEnum.Home}>
+                <Button variant="subtle">{t('menu.home')}</Button>
+              </Link>
+              <Link to={RoutesEnum.About}>
+                <Button variant="subtle">{t('menu.about')}</Button>
+              </Link>
+              <Link to={RoutesEnum.User + '/123'}>
+                <Button variant="subtle">{t('menu.user')}</Button>
+              </Link>
+              <Link to={RoutesEnum.Form}>
+                <Button variant="subtle">{t('menu.form')}</Button>
+              </Link>
+              <Link to={RoutesEnum.Counter}>
+                <Button variant="subtle">{t('menu.counter')}</Button>
+              </Link>
+              <Link to={RoutesEnum.Product}>
+                <Button variant="subtle">{t('menu.product')}</Button>
+              </Link>
 
               <Button onClick={() => changeLanguage('en')}>
                 {t('menu.language.english')}

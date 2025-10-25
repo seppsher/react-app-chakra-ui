@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { useLoader } from './Loader';
 import { Product } from '@/models/product.interface';
 import { Field, Input, VStack } from '@chakra-ui/react';
 import { z } from 'zod';
@@ -9,15 +8,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useDebounce from '@/hooks/debounce.hook';
 import { toaster } from './ui/toaster';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 export const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
 
   const [product, setProduct] = useState<Product | null>(null);
-  const { startLoading, stopLoading } = useLoader();
 
-  const processChange = useDebounce((value) => saveData(value));
+  const processChange = useDebounce((value) => useUpdateProduct.mutate(value));
 
   type FormData = z.infer<typeof formSchema>;
 
@@ -36,46 +35,36 @@ export const ProductDetails = () => {
     formState: { errors },
   } = form;
 
-  useEffect(() => {
-    const fetchProductDetails = async () => {
-      try {
-        startLoading();
-        const response = await fetch(`/api/product/${id}`);
-        const data = await response.json();
+  const { isLoading } = useQuery({
+    queryKey: ['getProductProductDetails'],
+    queryFn: () =>
+      fetch(`/api/product/${id}`)
+        .then((res) => res.json())
+        .then((res) => {
+          form.setValue('name', res.name);
+          setProduct(res);
+          return res;
+        }),
+  });
 
-        form.setValue('name', data.name);
-        setProduct(data);
-      } catch (error) {
-        console.error('Error fetching product details:', error);
-      } finally {
-        stopLoading();
-      }
-    };
-
-    fetchProductDetails();
-  }, []);
-
-  const saveData = async (value) => {
-    try {
-      await fetch(`/api/product/${id}`, {
+  const useUpdateProduct = useMutation({
+    mutationFn: (value) =>
+      fetch(`/api/product/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name: value }),
-      });
-
+      }),
+    onSuccess: () => {
       toaster.create({
-        // description: t('product.form.submit.success'),
         description: 'Nazwa produktu zaktualizowana pomyślnie',
         type: 'success',
       });
-    } catch (error) {
-      console.error('Błąd:', error);
-    } finally {
-      stopLoading();
-    }
-  };
+    },
+  });
+
+  if (isLoading) return <div>Loader</div>;
 
   return (
     <>

@@ -1,11 +1,9 @@
 import { HStack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useLoader } from './Loader';
-import { Product } from '@/models/product.interface';
 import { Routes } from '@/enums/Routes';
 import { Button } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 
 export const UserDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,25 +18,12 @@ export const UserDetails = () => {
     navigate(Routes.EditProduct.replace(':id', id));
   };
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const { startLoading, stopLoading } = useLoader();
+  const { data, isLoading } = useQuery({
+    queryKey: ['getProductsUserDetails'],
+    queryFn: () => fetch('/api/products').then((res) => res.json()),
+  });
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        startLoading();
-        const response = await fetch('/api/products');
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        stopLoading();
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  if (isLoading) return <div>Loader</div>;
 
   return (
     <>
@@ -50,7 +35,7 @@ export const UserDetails = () => {
         <h1>{t('user.products.header')}</h1>
 
         <ul>
-          {products.map((product) => (
+          {data.map((product) => (
             <li key={product.id}>
               {product.id}. {product.name} {product.brand}
               <HStack>
