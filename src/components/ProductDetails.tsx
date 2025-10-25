@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
 import { Product } from '@/models/product.interface';
 import { Field, Input, VStack } from '@chakra-ui/react';
 import { z } from 'zod';
@@ -10,8 +9,7 @@ import useDebounce from '@/hooks/debounce.hook';
 import { toaster } from './ui/toaster';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-export const ProductDetails = () => {
-  const { id } = useParams<{ id: string }>();
+export const ProductDetails = ({ id }: { id: string }) => {
   const { t } = useTranslation();
 
   const [product, setProduct] = useState<Product | null>(null);

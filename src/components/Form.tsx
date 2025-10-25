@@ -27,8 +27,8 @@ import {
 import { toaster } from './ui/toaster';
 import { useTranslation } from 'react-i18next';
 import { LuUpload } from 'react-icons/lu';
-import { useNavigate } from 'react-router-dom';
 import { Routes } from '@/enums/Routes';
+import { useRouter } from 'next/navigation';
 
 export const Form = () => {
   type FormData = z.infer<typeof formSchema>;
@@ -64,7 +64,7 @@ export const Form = () => {
     },
   });
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const {
     register,
@@ -319,7 +319,7 @@ export const Form = () => {
                             <Button
                               colorPalette="red"
                               onClick={() => {
-                                navigate(Routes.About);
+                                router.push(Routes.About);
                               }}
                             >
                               {t('form.dialog.button.cancel.label')}

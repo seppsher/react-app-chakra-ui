@@ -1,13 +1,14 @@
+'use client';
 import { Button, HStack } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
 import { Routes } from '../enums/Routes';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/navigation';
 
 export const Home = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleNavigate = () => {
-    navigate(Routes.About);
+    router.push(Routes.About);
   };
 
   const { t } = useTranslation();

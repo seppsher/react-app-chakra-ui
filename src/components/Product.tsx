@@ -1,16 +1,14 @@
 import { Button, Field, HStack, Input, VStack } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useLoader } from './Loader';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toaster } from './ui/toaster';
+import { useMutation } from '@tanstack/react-query';
 
 export const Product = () => {
   type FormData = z.infer<typeof formSchema>;
   const { t } = useTranslation();
-
-  const { startLoading, stopLoading } = useLoader();
 
   const formSchema = z.object({
     name: z.string().min(1, t('validations.required')),
@@ -29,29 +27,26 @@ export const Product = () => {
     formState: { errors },
   } = form;
 
-  const onSubmit = async (data: { name: string; brand: string }) => {
-    startLoading();
-    try {
-      await fetch('/api/products', {
+  const useAddProduct = useMutation({
+    mutationFn: (data) =>
+      fetch(`/api/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      });
-
+      }),
+    onSuccess: () => {
       toaster.create({
         description: t('product.form.submit.success'),
         type: 'success',
       });
-
-      console.log('Produkt dodany!');
-    } catch (error) {
-      console.error('Błąd:', error);
-    } finally {
       form.reset();
-      stopLoading();
-    }
+    },
+  });
+
+  const onSubmit = (data) => {
+    useAddProduct.mutate(data);
   };
 
   return (

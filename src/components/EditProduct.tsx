@@ -4,13 +4,11 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toaster } from './ui/toaster';
-import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
-export const EditProduct = () => {
+export const EditProduct = ({ id }: { id: string }) => {
   type FormData = z.infer<typeof formSchema>;
   const { t } = useTranslation();
-  const { id } = useParams<{ id: string }>();
 
   const { isLoading } = useQuery({
     queryKey: ['getProductEditProduct'],

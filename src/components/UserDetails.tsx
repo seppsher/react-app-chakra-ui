@@ -1,6 +1,6 @@
+'use client';
 import { HStack, Table } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
 import { Routes } from '@/enums/Routes';
 import { Button } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
@@ -11,18 +11,18 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import { Product } from '@/models/product.interface';
+import { useRouter } from 'next/navigation';
 
-export const UserDetails = () => {
-  const { id } = useParams<{ id: string }>();
+export const UserDetails = ({ id }: { id: string }) => {
   const { t } = useTranslation();
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const showDetails = (id) => {
-    navigate(Routes.ProductDetails.replace(':id', id));
+    router.push(Routes.ProductDetails.replace(':id', id));
   };
   const edit = (id) => {
-    navigate(Routes.EditProduct.replace(':id', id));
+    router.push(Routes.EditProduct.replace(':id', id));
   };
 
   const { data, isLoading } = useQuery({
