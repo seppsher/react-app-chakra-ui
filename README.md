@@ -1,6 +1,6 @@
 # modern-web-stack
 
-## Demo - [click here](https://vercel.com/seppshers-projects/modern-web-stack)
+## Demo - [click here](https://modern-web-stack.vercel.app)
 
 This project is a starter template for building React applications using Next.js and TypeScript.
 
